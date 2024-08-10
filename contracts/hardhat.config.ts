@@ -1,5 +1,6 @@
 import "@nomicfoundation/hardhat-toolbox";
 import "@zetachain/toolkit/tasks";
+import "./tasks/deploy";
 
 import { getHardhatConfigNetworks } from "@zetachain/networks";
 import { HardhatUserConfig } from "hardhat/config";
