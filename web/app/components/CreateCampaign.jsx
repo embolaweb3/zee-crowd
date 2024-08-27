@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
-import { getContract } from "../utils/contract";
+import { getContract } from "../../utils/contract";
 import { ethers } from "ethers";
 
 export default function CreateCampaign() {
@@ -10,7 +10,7 @@ export default function CreateCampaign() {
     const contract = getContract();
     if (contract) {
       try {
-        const tx = await contract.createCampaign(ethers.parseEther(goalAmount.toString()));
+        const tx = await contract.createCampaign(ethers.utils.parseEther(goalAmount.toString()));
         await tx.wait();
         alert("Campaign created successfully!");
       } catch (error) {
