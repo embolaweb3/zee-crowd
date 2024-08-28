@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Form, InputGroup, Spinner } from "react-bootstrap";
 import { getContract } from "../../utils/contract";
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
 export default function CreateCampaign() {
   const [goalAmount, setGoalAmount] = useState(0);
@@ -14,10 +15,10 @@ export default function CreateCampaign() {
         setIsLoading(true);
         const tx = await contract.createCampaign(ethers.utils.parseEther(goalAmount.toString()));
         await tx.wait();
-        alert("Campaign created successfully!");
+        toast.success("Campaign created successfully!");
       } catch (error) {
         console.error(error);
-        alert("Failed to create campaign.");
+        toast.error("Failed to create campaign.");
       } finally {
         setIsLoading(false);
       }

@@ -1,5 +1,7 @@
 import { Button } from "react-bootstrap";
 import { getContract } from "../utils/contract";
+import { toast } from "react-toastify";
+
 
 export default function WithdrawFunds({ campaignId }) {
   const withdrawFunds = async () => {
@@ -8,10 +10,10 @@ export default function WithdrawFunds({ campaignId }) {
       try {
         const tx = await contract.withdrawFunds(campaignId);
         await tx.wait();
-        alert("Funds withdrawn successfully!");
+        toast.success("Funds withdrawn successfully!");
       } catch (error) {
         console.error(error);
-        alert("Failed to withdraw funds.");
+        toast.error("Failed to withdraw funds.");
       }
     }
   };

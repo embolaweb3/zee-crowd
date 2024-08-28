@@ -4,6 +4,8 @@ import { Container, Row, Col, Card } from "react-bootstrap";
 import ConnectWallet from "../components/ConnectWallet";
 import CreateCampaign from "../components/CreateCampaign";
 import CampaignList from "../components/CampaignList";
+import { ToastContainer } from 'react-toastify';
+
 
 export default function Home() {
   const [account, setAccount] = useState("");
@@ -18,6 +20,8 @@ export default function Home() {
         <title>ZEE Crowd</title>
       </Head>
       <Row className="justify-content-center">
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
         <Col md={8}>
           <Card className="mt-5 shadow-lg p-3 mb-5 bg-white rounded animate__animated animate__fadeIn">
             <Card.Body>

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { getContract } from "../utils/contract";
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
+
 
 export default function Contribute({ campaignId }) {
   const [amount, setAmount] = useState(0);
@@ -12,10 +14,10 @@ export default function Contribute({ campaignId }) {
       try {
         const tx = await contract.contribute(campaignId, { value: ethers.utils.parseEther(amount.toString()) });
         await tx.wait();
-        alert("Contribution successful!");
+        toast.success("Contribution successful!");
       } catch (error) {
         console.error(error);
-        alert("Failed to contribute.");
+        toast.error("Failed to contribute.");
       }
     }
   };
