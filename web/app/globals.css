@@ -48,3 +48,20 @@ input::-webkit-inner-spin-button {
   background-color: #e0a800;
   border-color: #d39e00;
 }
+
+
+.card {
+  transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.btn-primary {
+  transition: background-color 0.3s ease-in-out;
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+}
