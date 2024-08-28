@@ -1,9 +1,11 @@
+"use client"
+
 import Head from "next/head";
 import { useState } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import ConnectWallet from "../components/ConnectWallet";
-import CreateCampaign from "../components/CreateCampaign";
-import CampaignList from "../components/CampaignList";
+import ConnectWallet from "../app/components/ConnectWallet";
+import CreateCampaign from "../app/components/CreateCampaign";
+import CampaignList from "../app/components/CampaignList";
 import { ToastContainer } from 'react-toastify';
 
 

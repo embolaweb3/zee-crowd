@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
-import { getContract } from "../utils/contract";
+import { getContract } from "../../utils/contract";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 

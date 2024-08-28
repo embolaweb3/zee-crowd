@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, Button, ProgressBar } from "react-bootstrap";
-import { getContract } from "../utils/contract";
+import { getContract } from "../../utils/contract";
 import { ethers } from "ethers";
 import 'animate.css';
 
