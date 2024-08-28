@@ -1,43 +1,74 @@
 import { useState, useEffect } from "react";
-import { Card, Button, ProgressBar } from "react-bootstrap";
+import { Button, Card, ProgressBar, Form, Spinner } from "react-bootstrap";
 import { getContract } from "../../utils/contract";
+import { toast } from "react-toastify";
 import { ethers } from "ethers";
-import 'animate.css';
 
 export default function CampaignList() {
   const [campaigns, setCampaigns] = useState([]);
+  const [isLoading, setIsLoading] = useState({});
+  const [contributions, setContributions] = useState({});
 
   useEffect(() => {
-    loadCampaigns();
+    const fetchCampaigns = async () => {
+      const contract = getContract();
+      if (contract) {
+        try {
+          const campaignCount = await contract.campaignCount();
+          const fetchedCampaigns = [];
+          for (let i = 0; i < campaignCount; i++) {
+            const campaign = await contract.campaigns(i);
+            fetchedCampaigns.push({
+              id: i,
+              creator: campaign.creator,
+              goalAmount: ethers.utils.formatEther(campaign.goalAmount),
+              fundsRaised: ethers.utils.formatEther(campaign.fundsRaised),
+              deadline: new Date(campaign.deadline * 1000),
+              isSuccessful: campaign.isSuccessful,
+              isWithdrawn: campaign.isWithdrawn,
+              isCanceled: campaign.isCanceled,
+            });
+          }
+          setCampaigns(fetchedCampaigns);
+        } catch (error) {
+          console.error("Failed to fetch campaigns:", error);
+        }
+      }
+    };
+
+    fetchCampaigns();
   }, []);
 
-  const loadCampaigns = async () => {
+  const handleContributionChange = (campaignId, value) => {
+    setContributions((prev) => ({
+      ...prev,
+      [campaignId]: value,
+    }));
+  };
+
+  const contribute = async (campaignId) => {
     const contract = getContract();
-    if (contract) {
-      const campaignCount = await contract.campaignCount();
-      const campaignList = [];
-
-      for (let i = 0; i < campaignCount; i++) {
-        const campaign = await contract.getCampaignDetails(i);
-        campaignList.push({
-          id: i,
-          creator: campaign[0],
-          goalAmount: ethers.utils.formatEther(campaign[1]),
-          deadline: new Date(campaign[2] * 1000),
-          fundsRaised: ethers.utils.formatEther(campaign[3]),
-          isSuccessful: campaign[4],
-          isWithdrawn: campaign[5],
-          isCanceled: campaign[6],
-        });
+    const amount = contributions[campaignId];
+    if (contract && amount) {
+      try {
+        setIsLoading((prev) => ({ ...prev, [campaignId]: true }));
+        const tx = await contract.contribute(campaignId, { value: ethers.utils.parseEther(amount) });
+        await tx.wait();
+        toast.success("Contribution successful!");
+      } catch (error) {
+        console.error("Failed to contribute:", error);
+        toast.error("Failed to contribute.");
+      } finally {
+        setIsLoading((prev) => ({ ...prev, [campaignId]: false }));
       }
-
-      setCampaigns(campaignList);
+    } else {
+      toast.error("Please enter a valid contribution amount.");
     }
   };
 
   return (
     <div className="mt-4">
-      <h2>Active Campaigns</h2>
+      <h2 className="animate__animated animate__fadeInDown">Active Campaigns</h2>
       {campaigns.map((campaign) => (
         <Card className="mb-3 shadow-sm animate__animated animate__fadeInUp" key={campaign.id}>
           <Card.Body>
@@ -54,13 +85,28 @@ export default function CampaignList() {
               label={`${((campaign.fundsRaised / campaign.goalAmount) * 100).toFixed(2)}%`}
             />
             {!campaign.isCanceled && !campaign.isWithdrawn && (
-              <Button 
-                variant="primary" 
-                className="mt-3"
-                disabled={campaign.isSuccessful}
-              >
-                {campaign.isSuccessful ? "Successful" : "Contribute"}
-              </Button>
+              <div className="mt-3">
+                <Form.Control
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter amount in ETH"
+                  value={contributions[campaign.id] || ""}
+                  onChange={(e) => handleContributionChange(campaign.id, e.target.value)}
+                  className="mb-2"
+                />
+                <Button 
+                  variant="primary" 
+                  className={`${isLoading[campaign.id] ? 'animate__animated animate__pulse animate__infinite' : ''}`}
+                  onClick={() => contribute(campaign.id)}
+                  disabled={isLoading[campaign.id] || campaign.isSuccessful}
+                >
+                  {isLoading[campaign.id] ? (
+                    <>
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Contributing...
+                    </>
+                  ) : campaign.isSuccessful ? "Successful" : "Contribute"}
+                </Button>
+              </div>
             )}
           </Card.Body>
         </Card>
